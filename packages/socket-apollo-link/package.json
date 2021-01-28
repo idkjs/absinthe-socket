@@ -44,6 +44,7 @@
     "flow-static-land": "0.2.8",
     "graphql": "14.0.2",
     "phoenix": "^1.5.7",
+    "rescript-apollo-client": "^1.0.0",
     "zen-observable": "0.8.11"
   },
   "devDependencies": {
