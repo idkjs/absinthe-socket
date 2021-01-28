@@ -27,12 +27,7 @@ const setNotifierRequestStatusSending = (absintheSocket, notifier) =>
     requestStatus: requestStatuses.sending
   });
 
-const createRequestError = message => {
-  const error = new Error(`request: ${message}`);
-  error.object = message;
-
-  return error;
-};
+const createRequestError = message => new Error(`request: ${message}`);
 
 const onTimeout = (absintheSocket, notifier) =>
   notifierNotifyActive(
@@ -46,17 +41,36 @@ const onError = (
   errorMessage: string
 ) => abortNotifier(absintheSocket, notifier, createRequestError(errorMessage));
 
-const getNotifierPushHandler = onSucceed => ({onError, onSucceed, onTimeout});
+const getNotifierPushHandler = (onSucceed, onError) => ({
+  onError,
+  onSucceed,
+  onTimeout
+});
 
 const pushRequestUsing = (
   absintheSocket: AbsintheSocket,
   notifier: Notifier<any, any>,
   onSucceed: $ElementType<NotifierPushHandler<any>, "onSucceed">
-) =>
+) => {
+  const onError = (
+    absintheSocket: AbsintheSocket,
+    notifier: Notifier<any, any>,
+    errorMessage: string
+  ) => {
+    // handle graphql errors correctly, GraphQL shouldn't throw,
+    // but passed as a payload...
+    if (typeof errorMessage === "object" && errorMessage.errors) {
+      onSucceed(absintheSocket, notifier, errorMessage);
+    } else {
+      onError(absintheSocket, notifier, errorMessage);
+    }
+  };
+
   pushAbsintheDocEvent(
     absintheSocket,
     setNotifierRequestStatusSending(absintheSocket, notifier),
-    getNotifierPushHandler(onSucceed)
+    getNotifierPushHandler(onSucceed, onError)
   );
+};
 
 export {pushRequestUsing as default, onError};
