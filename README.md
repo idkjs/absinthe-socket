@@ -9,3 +9,4 @@
 ## License
 
 [MIT](LICENSE.txt) :copyright: Jumpn Limited.
+if you can rewrite absinthe-socket.js and absinthe-socket-apollo-link.js to ReScript, we can make a nice PR to the Absinthe project

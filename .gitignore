@@ -9,3 +9,4 @@ yarn-error.log
 
 compat/
 dist/
+packages/socket-apollo-link/lib/bs
